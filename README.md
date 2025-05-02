@@ -1,7 +1,7 @@
 # 📚 BookClub - Your Virtual Reading Sanctuary
 
 <div align="center">
-  <img src="https://media.giphy.com/media/3o6Zt6ML6BklcajjsA/giphy.gif" width="200" height="200"/>
+  <img src="app/src/main/assets/BookClubLogoAnimation.gif" width="200" height="200" alt="Book Club Logo Animation"/>
   
   [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue.svg?logo=kotlin)](https://kotlinlang.org)
   [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Latest-green.svg?logo=jetpack-compose)](https://developer.android.com/jetpack/compose)
@@ -9,6 +9,42 @@
   [![Firebase](https://img.shields.io/badge/Firebase-Cloud-orange.svg?logo=firebase)](https://firebase.google.com)
   [![License](https://img.shields.io/badge/License-Free-brightgreen.svg)](LICENSE)
   [![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
+</div>
+
+## 📱 App Preview
+
+<div align="center">
+  
+### 📱 Screenshots
+
+<table>
+  <tr>
+    <td align="center"><b>Home Screen</b></td>
+    <td align="center"><b>Profile Screen</b></td>
+    <td align="center"><b>Book Detail</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/home_screen.png" width="220px" alt="Home Screen"/></td>
+    <td><img src="screenshots/profile_screen.png" width="220px" alt="Profile Screen"/></td>
+    <td><img src="screenshots/book_detail.png" width="220px" alt="Book Detail"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Book Clubs</b></td>
+    <td align="center"><b>Reading Streak</b></td>
+    <td align="center"><b>Club Discussion</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/book_clubs.png" width="220px" alt="Book Clubs"/></td>
+    <td><img src="screenshots/reading_streak.png" width="220px" alt="Reading Streak"/></td>
+    <td><img src="screenshots/club_discussion.png" width="220px" alt="Club Discussion"/></td>
+  </tr>
+</table>
+
+### 🎬 App Demo Video
+
+[![BookClub App Demo](screenshots/video_thumbnail.png)](https://youtu.be/your-youtube-link-here)
+*Click the image above to watch the demo video*
+
 </div>
 
 ## 🌟 Features
@@ -21,6 +57,8 @@
 | 👥 **Club Management** | Create and manage your own book clubs |
 | 💬 **Social Reading** | Engage in discussions with fellow readers |
 | 📚 **Personal Bookshelf** | Keep track of your books and reading progress |
+| 🔥 **Reading Streak** | Track your daily reading habits |
+| 🖌️ **Custom Themes** | Beautiful UI with light cream background |
 
 ### 🚀 Advanced Features
 | Feature | Description |
@@ -30,6 +68,8 @@
 | 🌐 **Video Conferencing** | Virtual book discussions |
 | ⭐ **Book Reviews** | Share your thoughts on books |
 | 🎨 **Modern UI** | Beautiful Jetpack Compose interface |
+| 🔁 **Sync Profile Data** | Seamless profile editing experience |
+| 🌙 **Glassy UI Effects** | Modern glass morphism design elements |
 
 ## 📊 Project Statistics
 
@@ -87,6 +127,39 @@ git clone https://github.com/MShehrozJamshaid/BookClub.git
    - Copy `google-services.json` to the app root directory
    - Never commit `google-services.json` to version control!
 5. Run the app
+
+## 📂 Project Structure
+
+```
+app/
+├─ src/
+│  ├─ main/
+│  │  ├─ assets/             # App assets including GIFs and logos
+│  │  ├─ java/com/.../      # Kotlin source files
+│  │  │  ├─ data/           # Data layer (repositories, models, DAOs)
+│  │  │  ├─ di/             # Dependency injection
+│  │  │  ├─ ui/             # UI components
+│  │  │  │  ├─ components/   # Reusable UI components
+│  │  │  │  ├─ screens/      # App screens
+│  │  │  │  ├─ theme/        # App theme
+│  │  │  └─ util/           # Utility classes
+│  │  └─ res/               # Android resources
+```
+
+## 🧩 Key Features Implementation
+
+### Reading Streak
+The app keeps track of your daily reading with an interactive streak counter:
+- Automatically updates when you read each day
+- Visual progress indicator shows how close you are to your goals
+- Manually adjust your reading streak if needed
+- Get rewarded for consistent reading habits
+
+### Profile Synchronization
+Your profile data stays consistent across the app:
+- Changes in the edit profile screen immediately reflect in your profile
+- Custom images and bios are preserved
+- Reading stats are always up to date
 
 ## 🤝 Contributing
 

@@ -9,10 +9,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 data class BookshelfUiState(
     val currentlyReading: List<Book> = emptyList(),
@@ -30,18 +34,87 @@ class BookshelfViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(BookshelfUiState(isLoading = true))
     val uiState: StateFlow<BookshelfUiState> = _uiState.asStateFlow()
+    
+    // Counter to track when all data flows have been processed
+    private var dataLoadingJobs = 0
+    private var timeoutJob: Job? = null
 
     init {
         loadBooks()
     }
 
     private fun loadBooks() {
+        // Reset data loading counter
+        dataLoadingJobs = 3
+        
+        // Cancel any existing timeout
+        timeoutJob?.cancel()
+        
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             
+            // Set a timeout to prevent infinite loading
+            timeoutJob = viewModelScope.launch {
+                delay(5000) // 5 seconds timeout
+                // If still loading after timeout, finish loading with what we have
+                if (_uiState.value.isLoading) {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            }
+            
             try {
-                // Load sample books instead of using repository flows that may not complete
-                loadSampleBooks()
+                // Load reading books
+                viewModelScope.launch {
+                    bookRepository.getBooksByStatus(BookStatus.READING)
+                        .catch { e ->
+                            _uiState.update { 
+                                it.copy(error = "Failed to load reading books: ${e.message}")
+                            }
+                            decrementAndCheckLoading()
+                        }
+                        .collectLatest { books ->
+                            _uiState.update { it.copy(currentlyReading = books) }
+                            decrementAndCheckLoading()
+                            
+                            // If no books found at all, load sample data
+                            if (books.isEmpty() && 
+                                _uiState.value.wantToRead.isEmpty() && 
+                                _uiState.value.completed.isEmpty() &&
+                                dataLoadingJobs <= 0) {
+                                loadSampleBooks()
+                            }
+                        }
+                }
+                
+                // Load want to read books
+                viewModelScope.launch {
+                    bookRepository.getBooksByStatus(BookStatus.WANT_TO_READ)
+                        .catch { e ->
+                            _uiState.update { 
+                                it.copy(error = "Failed to load want-to-read books: ${e.message}")
+                            }
+                            decrementAndCheckLoading()
+                        }
+                        .collectLatest { books ->
+                            _uiState.update { it.copy(wantToRead = books) }
+                            decrementAndCheckLoading()
+                        }
+                }
+                
+                // Load completed books
+                viewModelScope.launch {
+                    bookRepository.getBooksByStatus(BookStatus.COMPLETED)
+                        .catch { e ->
+                            _uiState.update { 
+                                it.copy(error = "Failed to load completed books: ${e.message}")
+                            }
+                            decrementAndCheckLoading()
+                        }
+                        .collectLatest { books ->
+                            _uiState.update { it.copy(completed = books) }
+                            decrementAndCheckLoading()
+                        }
+                }
             } catch (e: Exception) {
                 _uiState.update { 
                     it.copy(
@@ -49,7 +122,19 @@ class BookshelfViewModel @Inject constructor(
                         isLoading = false
                     ) 
                 }
+                
+                // If an exception occurs, load sample data for demo purposes
+                loadSampleBooks()
             }
+        }
+    }
+    
+    private fun decrementAndCheckLoading() {
+        dataLoadingJobs--
+        if (dataLoadingJobs <= 0) {
+            // All data flows have been processed, stop loading state
+            _uiState.update { it.copy(isLoading = false) }
+            timeoutJob?.cancel() // Cancel the timeout since we're done
         }
     }
     
@@ -60,7 +145,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 1,
                 title = "The Great Gatsby",
                 author = "F. Scott Fitzgerald",
-                coverImageUrl = "https://via.placeholder.com/150/3498db/ffffff?text=Gatsby",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8410894-L.jpg",
                 description = "A novel about the mysterious millionaire Jay Gatsby and his obsession with Daisy Buchanan.",
                 publishedDate = Date(),
                 status = BookStatus.READING,
@@ -74,7 +159,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 2,
                 title = "To Kill a Mockingbird",
                 author = "Harper Lee",
-                coverImageUrl = "https://via.placeholder.com/150/e74c3c/ffffff?text=Mockingbird",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8651697-L.jpg",
                 description = "A novel about racial inequality and moral growth in the American South during the 1930s.",
                 publishedDate = Date(),
                 status = BookStatus.READING,
@@ -92,7 +177,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 3,
                 title = "1984",
                 author = "George Orwell",
-                coverImageUrl = "https://via.placeholder.com/150/9b59b6/ffffff?text=1984",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8575708-L.jpg",
                 description = "A dystopian social science fiction novel about totalitarianism.",
                 publishedDate = Date(),
                 status = BookStatus.WANT_TO_READ,
@@ -105,7 +190,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 4,
                 title = "Pride and Prejudice",
                 author = "Jane Austen",
-                coverImageUrl = "https://via.placeholder.com/150/f1c40f/000000?text=Pride",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8751004-L.jpg",
                 description = "A romantic novel of manners that follows the character development of Elizabeth Bennet.",
                 publishedDate = Date(),
                 status = BookStatus.WANT_TO_READ,
@@ -118,7 +203,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 5,
                 title = "The Hobbit",
                 author = "J.R.R. Tolkien",
-                coverImageUrl = "https://via.placeholder.com/150/27ae60/ffffff?text=Hobbit",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8405716-L.jpg",
                 description = "A fantasy novel about the quest of home-loving Bilbo Baggins to win a share of the treasure guarded by a dragon.",
                 publishedDate = Date(),
                 status = BookStatus.WANT_TO_READ,
@@ -135,7 +220,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 6,
                 title = "The Catcher in the Rye",
                 author = "J.D. Salinger",
-                coverImageUrl = "https://via.placeholder.com/150/2ecc71/ffffff?text=Catcher",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8231449-L.jpg",
                 description = "A novel about teenage angst and alienation.",
                 publishedDate = Date(),
                 status = BookStatus.COMPLETED,
@@ -149,7 +234,7 @@ class BookshelfViewModel @Inject constructor(
                 id = 7,
                 title = "Brave New World",
                 author = "Aldous Huxley",
-                coverImageUrl = "https://via.placeholder.com/150/34495e/ffffff?text=Brave",
+                coverImageUrl = "https://covers.openlibrary.org/b/id/8231446-L.jpg",
                 description = "A dystopian novel about a futuristic World State.",
                 publishedDate = Date(),
                 status = BookStatus.COMPLETED,

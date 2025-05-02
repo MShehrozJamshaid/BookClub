@@ -23,4 +23,7 @@ interface UserDao {
 
     @Query("UPDATE users SET averageRating = :rating WHERE id = :userId")
     suspend fun updateAverageRating(userId: Long, rating: Float)
-} 
+    
+    @Query("UPDATE users SET lastReadingDate = :timestamp WHERE id = :userId")
+    suspend fun updateLastReadDate(userId: Long, timestamp: Long)
+}

@@ -4,6 +4,7 @@ package com.example.bookclub.ui.screens.addbook
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -27,6 +28,7 @@ import java.util.*
 @Composable
 fun AddBookScreen(
     onBackClick: () -> Unit,
+    onSearchOnline: () -> Unit = {},
     viewModel: AddBookViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -86,6 +88,28 @@ fun AddBookScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Search Online Button
+                OutlinedButton(
+                    onClick = onSearchOnline,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search"
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Search Books Online")
+                }
+                
+                Divider()
+                
+                Text(
+                    text = "Or add book manually:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
                 // Cover Image
                 Box(
                     modifier = Modifier
@@ -158,7 +182,8 @@ fun AddBookScreen(
                     onValueChange = { viewModel.updateTotalPages(it) },
                     label = { Text("Total Pages") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
                 // Published Date
@@ -209,23 +234,26 @@ private fun DatePickerDialog(
     onDismissRequest: () -> Unit,
     onDateSelected: (Date) -> Unit
 ) {
-    var selectedDate by remember { mutableStateOf(Date()) }
+    var datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis()
+    )
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("Select Publication Date") },
         text = {
             DatePicker(
-                state = rememberDatePickerState(
-                    initialSelectedDateMillis = selectedDate.time
-                ),
+                state = datePickerState,
                 showModeToggle = false
             )
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onDateSelected(selectedDate)
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        onDateSelected(Date(millis))
+                    }
+                    onDismissRequest()
                 }
             ) {
                 Text("OK")

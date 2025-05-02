@@ -37,6 +37,20 @@ class UserRepository @Inject constructor(
         return getUserByIdSync(userId)?.readingStreak ?: 0
     }
 
+    /**
+     * Gets the last read date for a user
+     */
+    suspend fun getLastReadDate(userId: Long): Date? {
+        return getUserByIdSync(userId)?.lastReadingDate
+    }
+    
+    /**
+     * Updates the last read date for a user
+     */
+    suspend fun updateLastReadDate(userId: Long, date: Date) {
+        userDao.updateLastReadDate(userId, date.time)
+    }
+
     suspend fun updateFavoriteGenres(userId: Long, genres: List<String>) {
         getUserById(userId).collect { user ->
             user?.let {

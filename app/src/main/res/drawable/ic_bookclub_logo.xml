@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M0,0h108v108h-108z" />
+        
+    <!-- Book outline -->
+    <path
+        android:fillColor="#D6BC8D"
+        android:pathData="M32,42L76,42A3,3 0,0 1,79 45L79,70A3,3 0,0 1,76 73L32,73A3,3 0,0 1,29 70L29,45A3,3 0,0 1,32 42z" />
+    
+    <!-- Book pages -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M35,45L73,45A2,2 0,0 1,75 47L75,68A2,2 0,0 1,73 70L35,70A2,2 0,0 1,33 68L33,47A2,2 0,0 1,35 45z" />
+    
+    <!-- Book spine -->
+    <path
+        android:fillColor="#D6BC8D"
+        android:pathData="M38,45L38,70Q45,63 54,70Q63,63 70,70L70,45Q63,52 54,45Q45,52 38,45z" />
+    
+    <!-- Person -->
+    <path
+        android:fillColor="#D6BC8D"
+        android:pathData="M54,33m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0" />
+    
+    <!-- Chat bubble -->
+    <path
+        android:fillColor="#D6BC8D"
+        android:pathData="M62,50L72,50A3,3 0,0 1,75 53L75,58A3,3 0,0 1,72 61L62,61A3,3 0,0 1,59 58L59,53A3,3 0,0 1,62 50z" />
+    
+    <!-- Chat bubble dots -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M63,55.5m-1.5,0a1.5,1.5 0,1 1,3 0a1.5,1.5 0,1 1,-3 0" />
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M67,55.5m-1.5,0a1.5,1.5 0,1 1,3 0a1.5,1.5 0,1 1,-3 0" />
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M71,55.5m-1.5,0a1.5,1.5 0,1 1,3 0a1.5,1.5 0,1 1,-3 0" />
+</vector>

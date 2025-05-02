@@ -29,6 +29,9 @@ class EditProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
+    // Store the original user data
+    private var originalUser: User? = null
+
     init {
         loadUserProfile()
     }
@@ -39,6 +42,7 @@ class EditProfileViewModel @Inject constructor(
             try {
                 // Using getUserByIdSync instead of collecting from flow
                 val user = userRepository.getUserByIdSync(1) ?: createDefaultUser()
+                originalUser = user
                 _uiState.update {
                     it.copy(
                         name = user.name,
@@ -63,8 +67,8 @@ class EditProfileViewModel @Inject constructor(
     private fun setDefaultProfileValues() {
         _uiState.update {
             it.copy(
-                name = "John Doe",
-                bio = "I love reading science fiction and fantasy novels.",
+                name = "Book Lover",
+                bio = "I love reading various genres and discussing books with others.",
                 profileImageUrl = "https://via.placeholder.com/150",
                 isLoading = false
             )
@@ -74,9 +78,9 @@ class EditProfileViewModel @Inject constructor(
     private fun createDefaultUser(): User {
         return User(
             id = 1,
-            name = "John Doe",
-            email = "johndoe@example.com",
-            bio = "I love reading science fiction and fantasy novels.",
+            name = "Book Lover",
+            email = "booklover@example.com",
+            bio = "I love reading various genres and discussing books with others.",
             profileImageUrl = "https://via.placeholder.com/150"
         )
     }
@@ -97,13 +101,15 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val updatedUser = User(
-                    id = 1, // Mock user ID
+                // Get the original user or create a new default one
+                val userToUpdate = originalUser ?: createDefaultUser()
+                
+                val updatedUser = userToUpdate.copy(
                     name = _uiState.value.name,
                     bio = _uiState.value.bio,
-                    profileImageUrl = _uiState.value.profileImageUrl,
-                    email = "user@example.com" // Using a default value since we don't have UI for this
+                    profileImageUrl = _uiState.value.profileImageUrl
                 )
+                
                 userRepository.updateUser(updatedUser)
                 _uiState.update { it.copy(isProfileUpdated = true, isLoading = false) }
             } catch (e: Exception) {

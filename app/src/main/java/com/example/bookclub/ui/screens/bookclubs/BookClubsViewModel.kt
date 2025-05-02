@@ -11,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -49,8 +51,49 @@ class BookClubsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             try {
-                // Load sample clubs data instead of using repository flows
-                loadSampleClubs()
+                // Load clubs from repository using Flow
+                // Public clubs
+                bookClubRepository.getPublicClubs()
+                    .catch { e ->
+                        _uiState.update { 
+                            it.copy(
+                                error = "Failed to load public clubs: ${e.message}",
+                                isLoading = false
+                            ) 
+                        }
+                    }
+                    .collectLatest { clubs ->
+                        _uiState.update { it.copy(publicClubs = clubs) }
+                        
+                        // After public clubs are loaded, check if we have sufficient data
+                        if (_uiState.value.myClubs.isNotEmpty()) {
+                            _uiState.update { it.copy(isLoading = false) }
+                        }
+                        
+                        // If no clubs are found, load sample data for demo purposes
+                        if (clubs.isEmpty()) {
+                            loadSampleClubs()
+                        }
+                    }
+                
+                // User's clubs
+                bookClubRepository.getUserClubs(currentUserId)
+                    .catch { e ->
+                        _uiState.update { 
+                            it.copy(
+                                error = "Failed to load your clubs: ${e.message}",
+                                isLoading = false
+                            ) 
+                        }
+                    }
+                    .collectLatest { clubs ->
+                        _uiState.update { 
+                            it.copy(
+                                myClubs = clubs,
+                                isLoading = false
+                            ) 
+                        }
+                    }
             } catch (e: Exception) {
                 _uiState.update { 
                     it.copy(
@@ -58,6 +101,9 @@ class BookClubsViewModel @Inject constructor(
                         isLoading = false
                     ) 
                 }
+                
+                // If an exception occurs, load sample data for demo purposes
+                loadSampleClubs()
             }
         }
     }
@@ -199,15 +245,15 @@ class BookClubsViewModel @Inject constructor(
     fun joinClub(clubId: Long) {
         viewModelScope.launch {
             try {
-                // Find the club in public clubs
+                // First, update the local UI state for immediate feedback
                 val clubToJoin = _uiState.value.publicClubs.find { it.id == clubId }
                 if (clubToJoin != null && !_uiState.value.myClubs.any { it.id == clubId }) {
                     val updatedMyClubs = _uiState.value.myClubs + clubToJoin
                     _uiState.update { it.copy(myClubs = updatedMyClubs) }
                 }
                 
-                // In a real app, we would call the repository:
-                // bookClubRepository.addMember(clubId, currentUserId)
+                // Then, update the data in the repository
+                bookClubRepository.joinClub(currentUserId, clubId)
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             }
@@ -217,12 +263,12 @@ class BookClubsViewModel @Inject constructor(
     fun leaveClub(clubId: Long) {
         viewModelScope.launch {
             try {
-                // Remove club from myClubs
+                // First, update the local UI state for immediate feedback
                 val updatedMyClubs = _uiState.value.myClubs.filterNot { it.id == clubId }
                 _uiState.update { it.copy(myClubs = updatedMyClubs) }
                 
-                // In a real app, we would call the repository:
-                // bookClubRepository.removeMember(clubId, currentUserId)
+                // Then, update the data in the repository
+                bookClubRepository.leaveClub(currentUserId, clubId)
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             }

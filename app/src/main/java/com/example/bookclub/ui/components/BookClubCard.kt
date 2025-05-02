@@ -1,17 +1,22 @@
 package com.example.bookclub.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.bookclub.data.model.BookClub
+import com.example.bookclub.ui.theme.GlassBlue
+import com.example.bookclub.ui.theme.GlassWhite
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,15 +29,21 @@ fun BookClubCard(
     isMember: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth()
+    // Random pastel color for each club's card
+    val randomHue = (bookClub.id.hashCode() % 360).toFloat()
+    val pastelColor = Color.hsv(randomHue, 0.3f, 0.95f)
+    val coverImageUrl = bookClub.coverImageUrl ?: "https://picsum.photos/seed/${bookClub.id}/300/200"
+    
+    GlassyCard(
+        modifier = modifier.fillMaxWidth(),
+        alpha = 0.85f,  // Changed containerColor to alpha
+        cornerRadius = 20.dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header
             Row(
@@ -40,14 +51,15 @@ fun BookClubCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Cover Image
+                // Cover Image with rounded corners
                 Box(
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(100.dp)
                         .weight(0.3f)
+                        .clip(RoundedCornerShape(12.dp))
                 ) {
                     AsyncImage(
-                        model = bookClub.coverImageUrl ?: "https://via.placeholder.com/150",
+                        model = coverImageUrl,
                         contentDescription = "Club cover",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -57,7 +69,7 @@ fun BookClubCard(
                 // Club Info
                 Column(
                     modifier = Modifier.weight(0.7f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
                         text = bookClub.name,
@@ -74,72 +86,86 @@ fun BookClubCard(
                 }
             }
 
-            // Stats
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            // Stats with glassy effect
+            GlassySurface(
+                cornerRadius = 12.dp,
+                alpha = 0.2f  // Changed contentPadding and containerColor to just alpha
             ) {
-                // Members
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),  // Added padding here instead
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.People,
-                        contentDescription = "Members",
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = "${bookClub.memberCount} members",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                // Next Meeting
-                bookClub.nextMeetingDate?.let { date ->
+                    // Members
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Event,
-                            contentDescription = "Next meeting",
+                            imageVector = Icons.Default.People,
+                            contentDescription = "Members",
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = SimpleDateFormat("MMM d", Locale.getDefault()).format(date),
+                            text = "${bookClub.memberCount} members",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    // Next Meeting
+                    bookClub.nextMeetingDate?.let { date ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Event,
+                                contentDescription = "Next meeting",
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = SimpleDateFormat("MMM d", Locale.getDefault()).format(date),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+
+                    // Privacy
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (bookClub.isPublic) Icons.Default.Public else Icons.Default.Lock,
+                            contentDescription = if (bookClub.isPublic) "Public" else "Private",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = if (bookClub.isPublic) "Public" else "Private",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
-
-                // Privacy
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = if (bookClub.isPublic) Icons.Default.Public else Icons.Default.Lock,
-                        contentDescription = if (bookClub.isPublic) "Public" else "Private",
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = if (bookClub.isPublic) "Public" else "Private",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
 
-            // Join/Leave Button
+            // Join/Leave Button with glassy effect
             Button(
                 onClick = if (isMember) onLeaveClick else onJoinClick,
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isMember) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                    containerColor = if (isMember) 
+                        MaterialTheme.colorScheme.error.copy(alpha = 0.9f) 
+                    else 
+                        GlassBlue
                 )
             ) {
-                Text(if (isMember) "Leave Club" else "Join Club")
+                Text(
+                    if (isMember) "Leave Club" else "Join Club",
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
         }
     }
-} 
+}

@@ -19,6 +19,7 @@ import com.example.bookclub.ui.screens.addbook.AddBookScreen
 import com.example.bookclub.ui.screens.editprofile.EditProfileScreen
 import com.example.bookclub.ui.screens.forums.ForumsScreen
 import com.example.bookclub.ui.screens.selectbook.SelectBookScreen
+import com.example.bookclub.ui.screen.OnlineBookSearchScreen
 
 @Composable
 fun BookClubNavHost(
@@ -122,7 +123,14 @@ fun BookClubNavHost(
         
         composable(Screen.AddBook.route) {
             AddBookScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onSearchOnline = { navController.navigate(Screen.Search.route) }
+            )
+        }
+        
+        composable(Screen.Search.route) {
+            OnlineBookSearchScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
         
