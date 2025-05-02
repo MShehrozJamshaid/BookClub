@@ -21,29 +21,45 @@
   <tr>
     <td align="center"><b>Home Screen</b></td>
     <td align="center"><b>Profile Screen</b></td>
-    <td align="center"><b>Book Detail</b></td>
+    <td align="center"><b>Reading Streak</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/home_screen.png" width="220px" alt="Home Screen"/></td>
-    <td><img src="screenshots/profile_screen.png" width="220px" alt="Profile Screen"/></td>
-    <td><img src="screenshots/book_detail.png" width="220px" alt="Book Detail"/></td>
+    <td><img src="screenshots/HomeScreen.png" width="220px" alt="Home Screen"/></td>
+    <td><img src="screenshots/Profile.png" width="220px" alt="Profile Screen"/></td>
+    <td><img src="screenshots/Streak.png" width="220px" alt="Reading Streak"/></td>
   </tr>
   <tr>
     <td align="center"><b>Book Clubs</b></td>
-    <td align="center"><b>Reading Streak</b></td>
-    <td align="center"><b>Club Discussion</b></td>
+    <td align="center"><b>Bookshelf</b></td>
+    <td align="center"><b>Forums</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/book_clubs.png" width="220px" alt="Book Clubs"/></td>
-    <td><img src="screenshots/reading_streak.png" width="220px" alt="Reading Streak"/></td>
-    <td><img src="screenshots/club_discussion.png" width="220px" alt="Club Discussion"/></td>
+    <td><img src="screenshots/Clubs.png" width="220px" alt="Book Clubs"/></td>
+    <td><img src="screenshots/BookShelf.png" width="220px" alt="Bookshelf"/></td>
+    <td><img src="screenshots/Forums.png" width="220px" alt="Forums"/></td>
   </tr>
 </table>
 
+### 🔍 Find & Discover Books
+
+<div align="center">
+  <img src="screenshots/FindBook.png" width="300px" alt="Find Books Feature"/>
+</div>
+
+### 📚 Alternate Bookshelf View
+
+<div align="center">
+  <img src="screenshots/BookShelf2.png" width="300px" alt="Alternate Bookshelf View"/>
+</div>
+
 ### 🎬 App Demo Video
 
-[![BookClub App Demo](screenshots/video_thumbnail.png)](https://youtu.be/your-youtube-link-here)
-*Click the image above to watch the demo video*
+<div align="center">
+  <a href="https://youtu.be/your-youtube-link-here">
+    <img src="app/src/main/assets/BookClubLogo.jpg" width="400px" alt="BookClub App Demo Thumbnail"/>
+  </a>
+  <p><i>Click the image above to watch the demo video</i></p>
+</div>
 
 </div>
 
