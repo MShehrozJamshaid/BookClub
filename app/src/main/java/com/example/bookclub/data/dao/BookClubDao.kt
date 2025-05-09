@@ -1,4 +1,4 @@
- package com.example.bookclub.data.dao
+package com.example.bookclub.data.dao
 
 import androidx.room.*
 import com.example.bookclub.data.model.BookClub
