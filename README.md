@@ -54,6 +54,9 @@
 
 ### 🎬 App Demo Video
 
+![https://www.youtube.com/watch?v=7GvR4N3768c&feature=youtu.be]
+<p><i>Click the image above to watch the demo video</i></p>
+
 <div align="center">
   <a href="https://www.youtube.com/watch?v=7GvR4N3768c&feature=youtu.be">
     <img src="app/src/main/assets/BookClubLogo.jpg" width="400px" alt="BookClub App Demo Thumbnail"/>
